@@ -32,7 +32,6 @@ _CITY_LOOKUP = {
 }
 
 
-
 def match_city(value):
     """Official city name for a messy value: 'NYC' -> 'New York'.
     Empty or unknown city -> None."""
@@ -40,7 +39,6 @@ def match_city(value):
     if not key:
         return None
     return _CITY_LOOKUP.get(key)
-
 
 
 def normalize_phone(value):
@@ -58,7 +56,6 @@ def normalize_phone(value):
     if len(digits) != 10:
         return None
     return "+1" + digits
-
 
 
 def clean_contact_columns(df):
@@ -79,7 +76,6 @@ def clean_contact_columns(df):
         report[f"{col}_invalid"] = int((had_value & after.isna()).sum())
         cleaned[col] = after
     return cleaned, report
-
 
 
 if __name__ == "__main__":
