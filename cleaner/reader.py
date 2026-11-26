@@ -73,6 +73,7 @@ def normalize_header(name):
         return ""
     return " ".join(str(name).split()).lower()
 
+
 def find_header_row(raw):
     """Returns the index of the header row in a sheet read with header=None."""
     for i in range(len(raw)):
@@ -82,6 +83,7 @@ def find_header_row(raw):
     raise ValueError(
         f"No header row found: no row has {MIN_HEADER_MATCHES} or more known column names"
     )
+
 
 def read_orders(path):
     """Reads one order file and returns its orders with standard column names.
@@ -136,6 +138,7 @@ def read_orders(path):
 
     # 6. Standard columns in a fixed order, clean 0..n-1 index.
     return df[STANDARD_COLUMNS + ["source_file", "source_row"]].reset_index(drop=True)
+
 
 def read_all(folder):
     """Reads every .xlsx file in a folder into one table."""
