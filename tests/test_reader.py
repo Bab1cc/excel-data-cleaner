@@ -141,3 +141,8 @@ def test_read_all_combines_files(tmp_path):
 def test_read_all_empty_folder_raises(tmp_path):
     with pytest.raises(ValueError, match="No .xlsx files"):
         read_all(tmp_path)
+
+
+def test_read_all_missing_folder_raises(tmp_path):
+    with pytest.raises(FileNotFoundError, match="Folder not found"):
+        read_all(tmp_path / "no_such_folder")

@@ -143,6 +143,10 @@ def read_orders(path):
 def read_all(folder):
     """Reads every .xlsx file in a folder into one table."""
     folder = Path(folder)
+    # A typo in the folder name and an empty folder are different mistakes,
+    # so they get different messages.
+    if not folder.is_dir():
+        raise FileNotFoundError(f"Folder not found: {folder}")
     # '~$name.xlsx' are lock files Excel creates while a file is open.
     paths = sorted(p for p in folder.glob("*.xlsx") if not p.name.startswith("~$"))
     if not paths:
