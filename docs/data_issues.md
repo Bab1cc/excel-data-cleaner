@@ -37,3 +37,4 @@
 ## Assumptions
 - `NY` means New York City, not New York State, and `LA` means Los Angeles, not Louisiana. All other values in the city column are cities, so this is the most likely meaning. With a real client, this would be confirmed with them first.
 - Each Order ID identifies one order across all files, so two rows with the same Order ID are the same order.
+- Customer names are converted to title case. Names with special capitalization (McDonald, van der Berg) may need manual correction.
