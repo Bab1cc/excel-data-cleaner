@@ -2,6 +2,7 @@
 import pandas as pd
 
 from cleaner.contacts import clean_contact_columns
+from cleaner.duplicates import remove_duplicates
 from cleaner.reader import RAW_DIR, STANDARD_COLUMNS, read_all
 from cleaner.text import clean_whitespace, clean_text_columns
 from cleaner.values import parse_value_columns
@@ -83,10 +84,19 @@ def clean_orders(raw):
     orders["issues"] = issues[~is_rejected]
     orders = orders[STANDARD_COLUMNS + ["line_total", "issues"] + SOURCE_COLUMNS]
 
+    # 5b. Duplicates are found only among valid rows, after cleaning: copies of
+    #     one order are spelled differently in each file until they are cleaned.
+    orders, removed, duplicates_report = remove_duplicates(orders)
+    report.update(duplicates_report)
+
     # 6. Rejected rows: the ORIGINAL values, so the client sees exactly what
     #    was in their file, with where it was and why it was rejected first.
-    rejected = raw[is_rejected].copy()
-    rejected["reason"] = reasons[is_rejected]
+    invalid = raw[is_rejected].copy()
+    invalid["reason"] = reasons[is_rejected]
+    # (source_file, source_row) is the row's address, so it finds the original.
+    duplicates = raw.merge(removed, on=SOURCE_COLUMNS, validate="one_to_one")
+    rejected = pd.concat([invalid, duplicates], ignore_index=True)
+    rejected = rejected.sort_values(SOURCE_COLUMNS)
     rejected = rejected[SOURCE_COLUMNS + ["reason"] + STANDARD_COLUMNS]
 
     # 7. Clean 0..n-1 index and the row counts.

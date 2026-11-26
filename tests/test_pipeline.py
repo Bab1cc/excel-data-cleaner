@@ -122,3 +122,13 @@ def test_report_counts_rows(raw):
     assert report["rows_rejected"] == 2
     assert report["rows_with_issues"] == 1
     assert report["email_invalid"] == 1             # step reports are included too
+
+
+def test_duplicates_are_moved_to_rejected():
+    raw = pd.DataFrame([raw_row("S-1", row=2), raw_row("S-1", row=3)])
+    orders, rejected, report = clean_orders(raw)
+    assert list(orders["source_row"]) == [2]
+    assert list(rejected["source_row"]) == [3]
+    assert rejected.loc[0, "reason"] == "duplicate of order S-1 (kept store_south.xlsx row 2)"
+    assert report["duplicates_removed"] == 1
+    assert report["rows_clean"] == 1
