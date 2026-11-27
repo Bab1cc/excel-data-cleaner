@@ -2,7 +2,7 @@
 
 A Python tool that merges messy Excel exports from several sources into one clean, analysis-ready workbook. It doesn't silently delete anything: every fix is counted, every rejected row is listed with the reason and its exact location in the original file, and the original files are never modified.
 
-**[▶ Try it in the browser](https://excel-data-cleaner.streamlit.app)**: run it on the sample files or upload your own, then download the cleaned workbook. No installation needed.
+**[▶ Try it in the browser](https://ognjen-data-excel-cleaner.streamlit.app/)**: run it on the sample files or upload your own, then download the cleaned workbook. No installation needed.
 
 ```
 $ python -m cleaner data/raw
