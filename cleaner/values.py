@@ -65,7 +65,7 @@ def parse_quantity(value):
     return int(match.group(1)) if match else None
 
 
-def parse_value_columns(df):
+def parse_value_columns(df, date_formats=None):
     """Returns (parsed copy of df, report). Raises ValueError for a source_file
     that has no entry in SOURCE_DATE_FORMATS.
 
@@ -74,7 +74,8 @@ def parse_value_columns(df):
       unit_price_from_text, quantity_from_text: text cells converted to numbers
       unit_price_invalid, quantity_invalid: had a value, but it is not a number
     """
-    unknown = set(df["source_file"]) - set(SOURCE_DATE_FORMATS)
+    formats = SOURCE_DATE_FORMATS if date_formats is None else date_formats
+    unknown = set(df["source_file"]) - set(formats)
     if unknown:
         raise ValueError(
             f"No date format known for: {', '.join(sorted(unknown))}. "
@@ -87,7 +88,7 @@ def parse_value_columns(df):
     # Dates need two columns (value + its source), so .map() is not enough.
     before = _as_object(df["order_date"])
     after = _object_series(
-        [parse_date(value, SOURCE_DATE_FORMATS[source])
+        [parse_date(value, formats[source])
          for value, source in zip(before, df["source_file"])],
         df.index,
     )

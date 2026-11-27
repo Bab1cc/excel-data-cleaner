@@ -95,3 +95,13 @@ def test_rejected_reason_wraps(workbook):
 def test_columns_are_wide_enough(workbook):
     ws = workbook["Rejected"]
     assert ws.column_dimensions["C"].width >= len("quantity must be positive (0)")
+
+
+def test_workbook_bytes(orders, rejected, report):
+    from io import BytesIO
+
+    from cleaner.output import workbook_bytes
+
+    data = workbook_bytes(orders, rejected, report)
+    assert isinstance(data, bytes)
+    assert load_workbook(BytesIO(data)).sheetnames == ["Orders", "Rejected", "Report"]

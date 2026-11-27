@@ -106,3 +106,10 @@ def test_original_is_not_modified(orders):
     original = orders.copy()
     parse_value_columns(orders)
     pd.testing.assert_frame_equal(orders, original)
+
+
+def test_date_formats_can_be_passed_in(orders):
+    formats = {"store_north.xlsx": None, "store_south.xlsx": "%d.%m.%Y",
+               "online_shop.xlsx": "%d/%m/%Y"}            # online read as day first
+    parsed, _ = parse_value_columns(orders, formats)
+    assert parsed.loc[3, "order_date"] == date(2026, 5, 2)

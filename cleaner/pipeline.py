@@ -50,12 +50,12 @@ def row_problems(clean, raw):
     return reasons, issues
 
 
-def clean_orders(raw):
+def clean_orders(raw, date_formats = None):
     """Runs all cleaning steps on the table from read_all().
     Returns (orders, rejected, report)."""
     # 1. Every step returns (df, report); the reports are merged into one.
     df, report = clean_text_columns(raw)
-    df, values_report = parse_value_columns(df)
+    df, values_report = parse_value_columns(df, date_formats)
     report.update(values_report)
     df, contacts_report = clean_contact_columns(df)
     report.update(contacts_report)
@@ -111,8 +111,8 @@ def clean_orders(raw):
     return orders, rejected, report
 
 
-def run(folder=RAW_DIR):
-    return clean_orders(read_all(folder))
+def run(folder=RAW_DIR, date_formats=None):
+    return clean_orders(read_all(folder), date_formats)
 
 
 if __name__ == "__main__":

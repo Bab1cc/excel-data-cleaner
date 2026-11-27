@@ -1,3 +1,4 @@
+from io import BytesIO
 """Writes the cleaning result to a formatted Excel workbook."""
 from pathlib import Path
 
@@ -80,9 +81,21 @@ def write_workbook(orders, rejected, report, path=OUTPUT_PATH):
     Creates the output folder if it doesn't exist."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
+    _write_sheets(path, orders, rejected, report)
+    return path
 
+
+def workbook_bytes(orders, rejected, report):
+    """The same workbook as write_workbook, but in memory (for a download button)."""
+    buffer = BytesIO()
+    _write_sheets(buffer, orders, rejected, report)
+    return buffer.getvalue()
+
+
+def _write_sheets(target, orders, rejected, report):
+    """Writes and formats the three sheets. target is a file path or an in-memory buffer."""
     # One `with` block: the file is written and closed once, even if a step fails.
-    with pd.ExcelWriter(path, engine="openpyxl") as writer:
+    with pd.ExcelWriter(target, engine="openpyxl") as writer:
         orders.to_excel(writer, sheet_name="Orders", index=False)
         rejected.to_excel(writer, sheet_name="Rejected", index=False)
         report_table(report, orders).to_excel(writer, sheet_name="Report", index=False)
@@ -90,13 +103,14 @@ def write_workbook(orders, rejected, report, path=OUTPUT_PATH):
         style_sheet(writer.sheets["Orders"],
                     date_columns={"order_date"},
                     money_columns={"unit_price", "line_total"})
-        style_sheet(writer.sheets["Rejected"], wrap_columns={"reason"})
+        style_sheet(writer.sheets["Rejected"],
+                    date_columns={"order_date"},
+                    wrap_columns={"reason"})
 
         ws = writer.sheets["Report"]
         style_sheet(ws)
         # Only the revenue cell is money; the other values are row counts.
         ws.cell(row=ws.max_row, column=2).number_format = MONEY_FORMAT
-    return path
 
 
 if __name__ == "__main__":

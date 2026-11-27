@@ -2,6 +2,8 @@
 
 A Python tool that merges messy Excel exports from several sources into one clean, analysis-ready workbook. It doesn't silently delete anything: every fix is counted, every rejected row is listed with the reason and its exact location in the original file, and the original files are never modified.
 
+**[▶ Try it in the browser](https://excel-data-cleaner.streamlit.app)**: run it on the sample files or upload your own, then download the cleaned workbook. No installation needed.
+
 ```
 $ python -m cleaner data/raw
 Read 547 rows from data/raw
@@ -61,6 +63,16 @@ One workbook, `output/clean_orders.xlsx`, with three sheets:
 | **Report** | What was changed, in plain English: names fixed, prices converted from text, duplicates removed, and the total revenue of clean orders |
 
 The sheets are ready to use: styled and frozen header, filters on every column, date and currency formats, and column widths that fit the content.
+
+## The web app
+
+The same cleaner runs as a small [Streamlit](https://streamlit.io) app (`app.py`):
+
+1. Use the three sample exports (each one can be downloaded, to see how messy it is) or upload your own `.xlsx` files.
+2. Choose how dates are written in each file. A date like `2/5/2026` means a different day in the US and in Europe, so the app asks instead of guessing.
+3. Click **Clean data** to see the row counts, browse the Orders, Rejected and Report tables and the raw data as it was read, and download `clean_orders.xlsx`.
+
+Uploaded files are processed in a temporary folder and are not stored.
 
 ## Results on the sample data
 
@@ -140,6 +152,12 @@ python -m cleaner data/raw
 python -m cleaner data/raw -o reports/march.xlsx    # custom output path
 ```
 
+Start the web app locally (it opens in your browser):
+
+```bash
+streamlit run app.py
+```
+
 Run the tests:
 
 ```bash
@@ -148,11 +166,12 @@ python -m pytest
 
 ## Testing
 
-More than 140 `pytest` tests cover every module: header detection, each cleaning rule (including edge cases like `31.02.2026`, `5551234567.0` or `Chicago, IL`), duplicate resolution, the content and formatting of the output workbook, and the command line. Tests build small Excel files in temporary folders, so they never depend on the sample data.
+Around 150 `pytest` tests cover every module: header detection, each cleaning rule (including edge cases like `31.02.2026`, `5551234567.0` or `Chicago, IL`), duplicate resolution, the content and formatting of the output workbook, and the command line. Tests build small Excel files in temporary folders, so they never depend on the sample data.
 
 ## Project structure
 
 ```
+├── app.py               # Streamlit web app
 ├── cleaner/
 │   ├── reader.py        # reads all files into one table with standard columns
 │   ├── text.py          # customer names, products, emails
@@ -178,5 +197,4 @@ A detailed, module-by-module guide (every function, the duplicate algorithm step
 
 ## Roadmap
 
-- Web version (Streamlit): upload your own files and download the cleaned workbook in the browser
 - Optional export of the clean orders to a PostgreSQL database
